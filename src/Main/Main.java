@@ -2,6 +2,7 @@ package Main;
 
 import java.util.*;
 import ru.stryapunin.*;
+import ru.stryapunin.Comparable;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,7 +25,7 @@ public class Main {
                         break;
                     }
                     case 3: {
-                        Comparable();
+                        _Comparable();
                         System.out.println("-----------------------------------------------------------------------------------------");
                         break;
                     }
@@ -108,8 +109,19 @@ public class Main {
                 }
             }
         }
-        private static void Comparable(Object obj){
+        private static void _Comparable() {
+            class String implements Comparable<String> {
+                private String value;
 
+                public String(String value) {
+                    this.value = value;
+                }
+
+                @Override
+                public int compare(String obj) {
+                    return this.value.compareTo(obj);
+                }
+            }
         }
     }
 }
