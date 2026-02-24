@@ -1,6 +1,7 @@
 package Main;
 
 import java.util.*;
+import java.util.function.*;
 import ru.stryapunin.Box;
 import ru.stryapunin.Comparable;
 
@@ -167,4 +168,119 @@ public class Main {
         System.out.println("Максимальное значение среди " + count + " коробок: " + max);
     }
 
+    private static <T, P> List<P> map(List<T> list, Function<T, P> function) {
+        List<P> result = new ArrayList<>();
+        for (T item : list) {
+            result.add(function.apply(item));
+        }
+        return result;
+    }
+    private static void task3_1() { // //Задача 3.1
+        List<String> strings = Arrays.asList("qwerty", "asdfg", "zx");
+        List<Integer> lengths = map(strings, String::length);
+        System.out.println("1. Длины строк " + strings + " : " + lengths);
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        List<Integer> absolutes = map(numbers, Math::abs);
+        System.out.println("2. Модули чисел " + numbers + " : " + absolutes);
+        List<int[]> arrays = Arrays.asList(
+                new int[]{1, 2, 3},
+                new int[]{-1, -2, -3},
+                new int[]{5, 0, 5}
+        );
+        List<Integer> maxValues = map(arrays, arr -> Arrays.stream(arr).max().orElse(Integer.MIN_VALUE));
+        System.out.print("3. Максимумы массивов: ");
+        for (int[] arr : arrays) System.out.print(Arrays.toString(arr) + " ");
+        System.out.println("-> " + maxValues);
+    }
+
+    private static <T> List<T> filter(List<T> list, Predicate<T> predicate) {
+        List<T> result = new ArrayList<>();
+        for (T item : list) {
+            if (predicate.test(item)) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+    private static void task3_2() { //Задача 3.2
+        System.out.println("--- Задача 3.2. Фильтр ---");
+        List<String> strings = Arrays.asList("qwerty", "asdfg", "zx");
+        List<String> longStrings = filter(strings, s -> s.length() >= 3);
+        System.out.println("1. Строки длиной >=3 из " + strings + " : " + longStrings);
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        List<Integer> nonPositive = filter(numbers, n -> n <= 0);
+        System.out.println("2. Не положительные числа из " + numbers + " : " + nonPositive);
+        List<int[]> arrays = Arrays.asList(
+                new int[]{1, 2, 3},
+                new int[]{-1, -2, -3},
+                new int[]{0, -5, -1}
+        );
+        List<int[]> noPositiveArrays = filter(arrays, arr -> Arrays.stream(arr).allMatch(n -> n <= 0));
+        System.out.print("3. Массивы без положительных элементов: ");
+        for (int[] arr : noPositiveArrays) System.out.print(Arrays.toString(arr) + " ");
+        System.out.println();
+    }
+
+    private static <T> T reduce(List<T> list, T identity, BinaryOperator<T> accumulator) {
+        T result = identity;
+        for (T item : list) {
+            result = accumulator.apply(result, item);
+        }
+        return result;
+    }
+    private static void task3_3() { //Задача 3.3
+        System.out.println("--- Задача 3.3. Сокращение ---");
+        List<String> strings = Arrays.asList("qwerty", "asdfg", "zx");
+        String concatenated = reduce(strings, "", (a, b) -> a + b);
+        System.out.println("1. Конкатенация строк " + strings + " : \"" + concatenated + "\"");
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        Integer sum = reduce(numbers, 0, Integer::sum);
+        System.out.println("2. Сумма чисел " + numbers + " : " + sum);
+        List<List<Integer>> listOfLists = Arrays.asList(
+                Arrays.asList(1, 2, 3),
+                Arrays.asList(4, 5),
+                Arrays.asList(6)
+        );
+        List<Integer> sizes = map(listOfLists, List::size);
+        Integer totalElements = reduce(sizes, 0, Integer::sum);
+        System.out.println("3. Общее количество элементов в " + listOfLists + " : " + totalElements);
+        List<String> empty = Collections.emptyList();
+        String emptyResult = reduce(empty, "default", (a, b) -> a + b);
+        System.out.println("   Пустой список -> результат: \"" + emptyResult + "\"");
+    }
+
+    private static <T, C> C collect(List<T> list, Supplier<C> supplier, BiConsumer<C, T> accumulator) {
+        C collection = supplier.get();
+        for (T item : list) {
+            accumulator.accept(collection, item);
+        }
+        return collection;
+    }
+    private static void task3_4() { //Задача 3.4
+        System.out.println("--- Задача 3.4. Коллекционирование ---");
+        List<Integer> numbers = Arrays.asList(1, -3, 7, -2, 0, 5);
+        List<List<Integer>> partitioned = collect(numbers,
+                () -> {
+                    List<List<Integer>> lists = new ArrayList<>();
+                    lists.add(new ArrayList<>());
+                    lists.add(new ArrayList<>());
+                    return lists;
+                },
+                (lists, n) -> {
+                    if (n > 0) lists.get(0).add(n);
+                    else lists.get(1).add(n);
+                }
+        );
+        System.out.println("1. Числа " + numbers + " -> положительные: " + partitioned.get(0)
+                + ", не положительные: " + partitioned.get(1));
+        List<String> strings = Arrays.asList("qwerty", "asdfg", "zx", "qw", "abc", "hello");
+        Map<Integer, List<String>> groupedByLength = collect(strings,
+                HashMap::new,
+                (map, s) -> map.computeIfAbsent(s.length(), k -> new ArrayList<>()).add(s)
+        );
+        System.out.println("2. Группировка строк по длине: " + groupedByLength);
+        List<String> withDuplicates = Arrays.asList("qwerty", "asdfg", "qwerty", "qw", "asdfg");
+        Set<String> uniqueSet = collect(withDuplicates, HashSet::new, Set::add);
+        System.out.println("3. Уникальные строки из " + withDuplicates + " : " + uniqueSet);
+    }
 }
