@@ -1,6 +1,7 @@
-package ru.stryapunin;
+package Main;
 
-import java.util.Scanner;
+import java.util.*;
+import ru.stryapunin.*;
 
 public class Main {
     public static void main(String[] args) {
