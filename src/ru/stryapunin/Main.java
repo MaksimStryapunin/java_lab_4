@@ -1,3 +1,5 @@
+package ru.stryapunin;
+
 import java.util.Scanner;
 
 public class Main {
