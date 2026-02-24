@@ -19,21 +19,13 @@ public class Main {
                 switch_choose = scanner.nextInt();
                 switch (switch_choose) {
                     case 1: {
-                        int z;
-                        System.out.print("Введите число x: ");
-                        scanner.nextInt();
-
+                        Generalized_Box();
                         System.out.println("-----------------------------------------------------------------------------------------");
-                        System.out.println("Результат: ");
                         break;
                     }
                     case 3: {
-                        int x, z;
-                        System.out.print("Введите число x: ");
-                        x = scanner.nextInt();
-
+                        Comparable();
                         System.out.println("-----------------------------------------------------------------------------------------");
-                        System.out.println("Результат: ");
                         break;
                     }
                     default: {
@@ -76,7 +68,6 @@ public class Main {
                         System.out.println("-----------------------------------------------------------------------------------------");
                         break;
                     }
-
                     default: {
                         System.out.println("Нет задачи в задании");
                         break;
@@ -84,6 +75,40 @@ public class Main {
                 }
                 break;
             }// Задача 3
+        }
+
+        private static void Generalized_Box() { //Задача 1
+            Box<Integer> box = new Box<>();
+            while (true) {
+                System.out.println("\n1. Положить число: ");
+                System.out.println("2. Извлечь число: ");
+                System.out.println("3. Посмотреть статус: ");
+
+                int action = input.getInt("Действие: ");
+
+                try {
+                    switch (action) {
+                        case 1 -> {
+                            int value = input.getInt("Введите значение: ");
+                            box.put(value);
+                        }
+                        case 2 -> {
+                            Integer value = box.get();
+                            if (value == null) {
+                                System.out.println("Коробка пуста");
+                            } else {
+                                System.out.println("Извлечено значение: " + value);
+                            }
+                        }
+                        case 3 -> System.out.println("status: " + box);
+                        default -> System.out.println("Неверная команда");
+                    }
+                } catch (IllegalStateException e) {
+                    System.out.println("ERROR: " + e.getMessage());
+                }
+            }
+        }
+        private static void Comparable(Object obj){
 
         }
     }
